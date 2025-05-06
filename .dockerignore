@@ -1,0 +1,14 @@
+# Ignorar directorios y archivos no necesarios
+target/
+.idea/
+.vscode/
+.git/
+*.log
+*.tmp
+*.iml
+
+# No ignorar .env (asegurarse de que .env esté presente)
+!.env
+
+# Ignorar archivos de configuración específicos de otros entornos
+.DS_Store
