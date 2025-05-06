@@ -14,4 +14,4 @@ WORKDIR /app
 COPY --from=build /app/target/DiscordBot-1.0-SNAPSHOT.jar app.jar
 
 # Ejecuta el bot
-CMD ["java", "-jar", "target/DiscordBot-1.0-SNAPSHOT.jar"]
+CMD ["java", "-jar", "app.jar"]
