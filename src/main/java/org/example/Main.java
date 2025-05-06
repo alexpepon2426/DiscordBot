@@ -17,7 +17,8 @@ public class Main extends ListenerAdapter {
 
     public static void main(String[] args) throws LoginException {
         // Inicializar JDA con el token del bot
-        Dotenv dotenv = Dotenv.load(); // Carga .env automáticamente
+
+        Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
         String token = dotenv.get("DISCORD_TOKEN");
 
         jda = JDABuilder.createDefault(token)
