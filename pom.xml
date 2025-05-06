@@ -15,6 +15,22 @@
 
     <build>
         <plugins>
+            <!-- Plugin para empaquetar el jar con dependencias -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Plugin para crear el jar con la clase principal -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -22,13 +38,14 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Main-Class>org.example.Main</Main-Class> <!-- Cambiado a org.example.Main -->
+                            <Main-Class>org.example.Main</Main-Class>
                         </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
 
     <dependencies>
         <dependency>
