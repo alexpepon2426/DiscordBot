@@ -14,7 +14,7 @@ WORKDIR /app
 COPY --from=build /app/target/DiscordBot-1.0-SNAPSHOT.jar app.jar
 
 # Copia el archivo .env
-COPY .env .env
+
 
 # Ejecuta el bot
 CMD ["java", "-jar", "app.jar"]
