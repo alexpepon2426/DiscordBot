@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.security.auth.login.LoginException;
+import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,31 +17,36 @@ public class Main extends ListenerAdapter {
     private static net.dv8tion.jda.api.JDA jda;
 
     public static void main(String[] args) throws LoginException {
-        // Inicializar JDA con el token del bot
-
         Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
         String token = dotenv.get("DISCORD_TOKEN");
 
         jda = JDABuilder.createDefault(token)
-                .enableIntents(net.dv8tion.jda.api.requests.GatewayIntent.GUILD_MESSAGES, net.dv8tion.jda.api.requests.GatewayIntent.DIRECT_MESSAGES) // Reemplazar por los intentos correctos
+                .enableIntents(net.dv8tion.jda.api.requests.GatewayIntent.GUILD_MESSAGES,
+                        net.dv8tion.jda.api.requests.GatewayIntent.DIRECT_MESSAGES)
                 .addEventListeners(new Main())
                 .build();
 
-        // Esperar hasta que JDA esté listo
         try {
-            jda.awaitReady(); // Espera a que el bot esté completamente listo
+            jda.awaitReady();
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Para Render (Web Service en plan gratuito): escuchar en un puerto falso
+        try {
+            int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "8080"));
+            ServerSocket socket = new ServerSocket(port);
+            socket.accept(); // Bloquea indefinidamente
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public Main() {
-        // Comandos que el bot responderá
-        commands.put("!ping", (event) -> event.getChannel().sendMessage("🏓 Pong!").queue());
-        commands.put("!gay", (event) -> event.getChannel().sendMessage("Tu ere un gay manito, " + event.getAuthor().getName()).queue());
+        commands.put("!ping", event -> event.getChannel().sendMessage("🏓 Pong!").queue());
+        commands.put("!gay", event -> event.getChannel().sendMessage("Tu ere un gay manito, " + event.getAuthor().getName()).queue());
 
-        // Comando para obtener los juegos gratuitos
-        commands.put("!juego", (event) -> {
+        commands.put("!juego", event -> {
             if (alertaEpicardoGames == null) {
                 event.getChannel().sendMessage("⚠️ Aún no estoy listo para mostrar los juegos gratis.").queue();
                 return;
@@ -48,7 +54,6 @@ public class Main extends ListenerAdapter {
             String freeGamesMessage = alertaEpicardoGames.getFreeGamesMessage();
             event.getChannel().sendMessage(freeGamesMessage).queue();
         });
-
     }
 
     @Override
@@ -63,15 +68,9 @@ public class Main extends ListenerAdapter {
         }
     }
 
-    // Cambiar el nombre de onReady() por onShardReady()
     public void onReady() {
-        // Obtener el canal de texto por nombre cuando el bot esté listo
-        TextChannel channel = jda.getTextChannelsByName("terapia-de-pareja", true).get(0); // Reemplaza "nombre_del_canal" por el canal real
-
-        // Crear la instancia de AlertaEpicardoGames con el canal de Discord
+        TextChannel channel = jda.getTextChannelsByName("terapia-de-pareja", true).get(0);
         alertaEpicardoGames = new AlertaEpicardoGames(channel);
-
-        // Iniciar la tarea programada para el recordatorio semanal
         alertaEpicardoGames.scheduleWeeklyReminder();
     }
 
